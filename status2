@@ -1,0 +1,99 @@
+<?php
+#Тут ваш токен.
+#XXXXXXXX это то что нужно вводить.
+#oauth.vk.com/blank.html#access_token=XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX&expires_in=0&user_id=133116406
+#Токен брать тут http://u.to/token-vk-dlja-avtostatusa/EnTlBQ
+#Токен брать тут http://u.to/super_access_token/uVy-Bw
+$access_token = '63460358f77dfd3b5073b71c4d2afb286e26e2f961960e4ad67c9b499b83403752d04100d429244ff168d'; 
+
+
+
+// Часовой пояс
+
+date_default_timezone_set ('Europe/Moscow'); // Сюда пиши где живёшь
+
+
+$time = date("H ✖ i");
+
+
+$date1 = date("d.m");
+
+
+$messageGet = curl('https://api.vk.com/method/messages.get?count=1&access_token='.$access_token);
+$json = json_decode($messageGet,1);
+$countM = $json['response']['0'];
+
+$smiles = array("💛", "💚", "💙","💜", "💟" );
+$rand = rand(0,count($smiles) - 1);  
+$hurt1 = $smiles[$rand]; 
+
+$smiles = array("⏳", "⌛", "⏰","⌚", "⌚" );
+$rand = rand(0,count($smiles) - 1);  
+$hurt2 = $smiles[$rand]; 
+
+$smiles = array("💌", "📧", "📝","📨", "📥" );
+$rand = rand(0,count($smiles) - 1);  
+$hurt3 = $smiles[$rand]; 
+
+$список_лоченных = curl('https://api.vk.com/method/account.getBanned?access_token='.$access_token);
+$json = json_decode($список_лоченных,1);
+$колво_в_чс = $json['response']['0'];
+
+$smiles = array("😚", "😉", "😘","😾 ", "😜" );
+$rand = rand(0,count($smiles) - 1);  
+$hurt = $smiles[$rand]; 
+
+$smiles = array("😋", "😋", "😆","😃", "😊" );
+$rand = rand(0,count($smiles) - 1);  
+$hurt4 = $smiles[$rand]; 
+
+$RequestsGet = curl('https://api.vk.com/method/users.get?user_ids='.$tvoiID.'&fields=online&name_case=Nom&access_token='.$access_token);
+$json1 = json_decode($RequestsGet,1);
+$countR = $json1[response][0][online_mobile];
+$countD = $json1[response][0][online];
+
+$online2 = array(
+    0 => 'Я 😴', 1 => 'Я с  💻'
+);
+
+$online = array(
+    1 => 'Я с 📱'
+);
+
+
+if ($countR == 1) {
+$answer="$online[$countR]";
+} else {
+$answer="$online2[$countD]";
+}
+
+$weater = file_get_contents("http://informer.gismeteo.ru/xml/26850_1.xml");
+$xml = xml_parser_create();
+$indexes = array(); 
+$values = array(); 
+xml_parse_into_struct($xml,$weater, $values, $indexes); 
+xml_parser_free($xml); 
+$wiz = $values[8][attributes][MAX]; 
+
+ 
+$skype = file_get_contents('http://mystatus.skype.com/'.$log.'.txt'); 
+
+
+$smi3 = "|$hurt2:$time|$hurt3:$countM|$answer|📅:$date1\ ($hurt4) Погода: $wiz °C| ⛔ В чс: ".$колво_в_чс."|Skype:$skype  ($hurt)  /";
+$smi = array('1', '2', '3', '4', '5', '6', '7', '8', '9', '0');
+$smi2 = array('1⃣', '2⃣', '3⃣', '4⃣', '5⃣', '6⃣', '7⃣', '8⃣', '9⃣', '&#127358;');
+
+
+$status = ''.str_replace($smi, $smi2, $smi3).' '; 
+$statusSet = curl('https://api.vk.com/method/status.set?text='.urlencode($status).'&access_token='.$access_token);
+
+function curl( $url ){
+    $ch = curl_init( $url );
+    curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
+    curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+    $response = curl_exec( $ch );
+    curl_close( $ch );
+    return $response;
+}//wWw.Statuses.96.LT
+?><!-- Скрипт предоставил http://vk.com/Almazik2015 -->
